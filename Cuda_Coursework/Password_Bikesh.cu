@@ -2,10 +2,7 @@
 #include <cuda_runtime_api.h>
 #include <time.h>
 /****************************************************************************
-This program gives an example of a poor way to implement a password cracker
-in CUDA C. It is poor because it acheives this with just one thread, which
-is obviously not good given the scale of parallelism available to CUDA
-programs.
+This program shows a poor way to implement a password cracker in CUDA C. It's poor because it accomplishes this with a single thread, which definitely is not good given the scale to which CUDA programs have parallelism.
 The intentions of this program are:
 1) Demonstrate the use of __device__ and __global__ functions
 2) Enable a simulation of password cracking in the absence of library
@@ -72,10 +69,10 @@ p4++;
 return 0;
 }
 __global__ void kernel() {
-char i1,i2,i3,i4;//variables
+char i1,i2,i3,i4; //variables
 char password[7];
 password[6] = '\0';
-//block id threrad id initilized
+//block id thread id initilized
 int i = blockIdx.x+65;
 int j = threadIdx.x+65;
 char firstMatch = i;
@@ -116,8 +113,8 @@ int main() {
 struct timespec start, finish;
 long long int time_elapsed;
 clock_gettime(CLOCK_MONOTONIC, &start);
-//kernal function that determine block and threads to use
-kernel <<<26,26>>>();
+// Kernel function to evaluate the block and thread to be used
+ kernel <<<26,26>>>();
 cudaThreadSynchronize();
 clock_gettime(CLOCK_MONOTONIC, &finish);
 time_difference(&start, &finish, &time_elapsed);
