@@ -303,13 +303,13 @@ return sqrt(mean);
 //global func
 __global__ void d_rms_error(double *m, double *c, double *error_sum_arr, point_t *d_data) {
 /*
-Calculate the current index by using:
+Using the current index calculation:
 - The thread id
 - The block id
 - The number of threads per block
 */
 int i = threadIdx.x + blockIdx.x * blockDim.x;
-//sum error stored in array
+//Error of sum stored in the array
 error_sum_arr[i] = d_residual_error(d_data[i].x, d_data[i].y, *m, *c);
 }
 //time difffernce
@@ -344,34 +344,34 @@ struct timespec start, finish;
 long long int time_elapsed;
 clock_gettime(CLOCK_MONOTONIC, &start);
 cudaError_t error;
-//variables for device func
+//Device func variables
 double *d_dm;
 double *d_dc;
 double *d_error_sum_arr;
 point_t *d_data;
 be = rms_error(bm, bc);
-//allocating memory in device using CUDA malloc
+//assigning memory in device using CUDA malloc
 error = cudaMalloc(&d_dm, (sizeof(double) * 8));
 if(error){
 fprintf(stderr, "cudaMalloc on d_dm returned %d %s\n", error,
 cudaGetErrorString(error));
 exit(1);
 }
-//allocating memory in device using CUDA malloc
+//assigning memory in device using CUDA malloc
 error = cudaMalloc(&d_dc, (sizeof(double) * 8));
 if(error){
 fprintf(stderr, "cudaMalloc on d_dc returned %d %s\n", error,
 cudaGetErrorString(error));
 exit(1);
 }
-//allocating memory for d_error_sum_arr
+//assigning d_error_sum_arr memory 
 error = cudaMalloc(&d_error_sum_arr, (sizeof(double) * 1000));
 if(error){
 fprintf(stderr, "cudaMalloc on d_error_sum_arr returned %d %s\n", error,
 cudaGetErrorString(error));
 exit(1);
 }
-//allocating memory for d_data
+//assigning d_data memory
 error = cudaMalloc(&d_data, sizeof(data));
 if(error){
 fprintf(stderr, "cudaMalloc on d_data returned %d %s\n", error,
@@ -383,7 +383,7 @@ for(i=0;i<8;i++) {
 dm[i] = bm + (om[i] * step);
 dc[i] = bc + (oc[i] * step);
 }
-//copying memory host ti device
+//copying memory host to device
 error = cudaMemcpy(d_dm, dm, (sizeof(double) * 8), cudaMemcpyHostToDevice);
 if(error){
 fprintf(stderr, "cudaMemcpy to d_dm returned %d %s\n", error,
@@ -402,13 +402,13 @@ fprintf(stderr, "cudaMemcpy to d_data returned %d %s\n", error,
 cudaGetErrorString(error));
 }
 for(i=0;i<8;i++) {
-//Host variable storing the array returned from the kernel function.
+//The host variable that stores the array has been returned by kernel function.
 double h_error_sum_arr[1000];
-//Stores the total sum of the values from the error sum array.
-double error_sum_total;
-//Stores the mean of the total sum of the error sums.
+//The total sum of the value of the error sum array is stored. 
+ double error_sum_total;
+//Stores the average of the total sum of the error sums.
 double error_sum_mean;
-//Call the rms_error function using 100 blocks and 10 threads.
+// Using 100 blocks and 10 threads, call the rms_error function.
 d_rms_error <<<100,10>>>(&d_dm[i], &d_dc[i], d_error_sum_arr, d_data);
 cudaThreadSynchronize();
 //Copy memory for d_error_sum_arr
@@ -423,9 +423,9 @@ for(int j=0; j<n_data; j++) {
 //Add each error sum to the error sum total.
 error_sum_total += h_error_sum_arr[j];
 }
-//Calculate the mean for the error sum.
+//The average for the error sum is calculated
 error_sum_mean = error_sum_total / n_data;
-//Calculate the square root for the error sum mean.
+//The square root is calculated for the error sum mean.
 e[i] = sqrt(error_sum_mean);
 if(e[i] < best_error) {
 best_error = e[i];
@@ -471,11 +471,10 @@ exit(1);
 }
 //freee memory complete
 printf("minimum m,c is %lf,%lf with error %lf\n", bm, bc, be);
-//geting time after printing m c with error
+//get time after printing m c with error
 clock_gettime(CLOCK_MONOTONIC, &finish);
 time_difference(&start, &finish, &time_elapsed);
 printf("Time elapsed was %lldns or %0.9lfs\n", time_elapsed,
 (time_elapsed/1.0e9));
 return 0;
 }
-
