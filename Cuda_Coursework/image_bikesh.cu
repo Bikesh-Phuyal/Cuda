@@ -27,7 +27,7 @@ Dr Kevan Buckley, University of Wolverhampton, 2018
 #define height 72
 unsigned char results[width * height];
 //dataset
-unsigned char image[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+unsigned char image [] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -411,8 +411,8 @@ unsigned char image[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 __global__ void detect_edges(unsigned char *input, unsigned char *output) {
 int i = (blockIdx.x * 72) + threadIdx.x;
 int x, y; // the pixel of interest
-int b, d, f, h; // the pixels adjacent to x,y used for the calculation
-int r; // the result of calculate
+int b, d, f, h; // the pixels adjacent to the x,y used to calculate
+int r; // the calculation result 
 y = i / width;;
 x = i - (width * y);
 if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
@@ -472,23 +472,23 @@ return !(*difference > 0);
 int main(int argc, char **argv) {
 unsigned char *d_results;
 unsigned char *d_image;
-//allocating bytes of linear memorry in device
+//Assigning linear memory bytes to the device
 cudaMalloc((void**)&d_image, sizeof(unsigned char) * (width * height));
 cudaMalloc((void**)&d_results, sizeof(unsigned char) * (width * height));
 cudaMemcpy(d_image, &image, sizeof(unsigned char) * (width * height),
-cudaMemcpyHostToDevice);//copy bytes form the momory area from host to device
+cudaMemcpyHostToDevice);//Copy bytes from host to device from the memory area
 signal(SIGINT, sigint_callback);
 struct timespec start, finish;
 long long int time_elapsed;
 clock_gettime(CLOCK_MONOTONIC, &start);
 detect_edges<<<100,72>>>(d_image, d_results);
-cudaThreadSynchronize(); // blocks until device complets all associative tasks
+cudaThreadSynchronize(); // blocks all associative tasks until the device completes them
 cudaMemcpy(&results, d_results, sizeof(unsigned char) * (width * height), cudaMemcpyDeviceToHost);
 clock_gettime(CLOCK_MONOTONIC, &finish);
 time_difference(&start, &finish, &time_elapsed);
 printf("Time elapsed was %lldns or %0.9lfs\n", time_elapsed,
 (time_elapsed/1.0e9));
-//frees memroy space used by pointer
+//Free the pointer's memory space
 cudaFree(&d_image);
 cudaFree(&d_results);
 glutInit(&argc, argv);
